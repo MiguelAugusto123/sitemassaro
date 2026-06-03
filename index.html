@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1042,20 +1041,21 @@
     if (pass.length<6)  { showError('Senha precisa ter pelo menos 6 caracteres.'); return; }
     setLoading('signupBtn', true);
     hideError();
-    const { data, error } = await sb.auth.signUp({ email, password: pass });
+    const { error: signUpError } = await sb.auth.signUp({ email, password: pass });
     setLoading('signupBtn', false, 'Criar Conta');
-    if (error) { showError(error.message); return; }
-    if (data.user && !data.session) {
+    if (signUpError) { showError(signUpError.message); return; }
+
+    // Após cadastro, faz login automático
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) {
       closeModal();
-      showToast('📧', 'Confirme seu e-mail para ativar a conta!');
+      showToast('📧', 'Conta criada! Verifique seu e-mail para ativar.');
       return;
     }
-    if (data.user) {
-      closeModal();
-      await salvarPerfil(data.user);
-      renderUser(data.user);
-      showToast('🎉', 'Conta criada! Bem-vindo ao NexusPlay!');
-    }
+    closeModal();
+    await salvarPerfil(data.user);
+    renderUser(data.user);
+    showToast('🎉', 'Conta criada e logado! Bem-vindo ao NexusPlay!');
   }
 
   // ══ SALVAR PERFIL NO BANCO (tabela profiles) ══
