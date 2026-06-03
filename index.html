@@ -1009,7 +1009,7 @@
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.href,
+        redirectTo: 'https://nexus-play-jet.vercel.app',
         queryParams: {
           prompt: 'select_account',   // força tela de escolha de conta sempre
           access_type: 'offline'
@@ -1108,15 +1108,30 @@
 
   // ══ DETECTA SESSÃO AUTOMATICAMENTE (inclui retorno do redirect Google) ══
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (session?.user) {
+    if (event === 'SIGNED_IN' && session?.user) {
       renderUser(session.user);
-      if (event === 'SIGNED_IN') {
-        await salvarPerfil(session.user);
-        const nome = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email.split('@')[0];
-        showToast('🎮', 'Bem-vindo, ' + nome + '!');
+      await salvarPerfil(session.user);
+      const nome = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email.split('@')[0];
+      showToast('🎮', 'Bem-vindo, ' + nome + '!');
+      // Limpa os parametros OAuth da URL sem recarregar a pagina
+      if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
+    if (event === 'SIGNED_OUT') {
+      document.getElementById('authButtons').style.display = 'flex';
+      document.getElementById('userBadge').style.display   = 'none';
+      document.getElementById('userAvatar').textContent    = '??';
+    }
   });
+
+  // Verifica sessão existente ao carregar a pagina
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      renderUser(session.user);
+    }
+  })();
 
   // ══ TOAST ══
   function showToast(icon, msg) {
