@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexusPlay — Hub de Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:       #020b18;
+    --navy-2:     #071428;
+    --navy-3:     #0d2040;
+    --navy-4:     #0f2d5c;
+    --blue:       #1560bd;
+    --blue-light: #2b7de9;
+    --blue-glow:  #3b9eff;
+    --white:      #f0f4ff;
+    --white-muted:#a8b8d0;
+    --black:      #000913;
+    --border:     rgba(43,125,233,0.25);
+    --border-glow:rgba(59,158,255,0.5);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Exo 2', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCANLINE OVERLAY ─── */
+  body::before {
+    content:'';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.08) 3px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ─── CURSOR ─── */
+  body { cursor: crosshair; }
+  a, button { cursor: pointer; }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 64px;
+    background: rgba(2,11,24,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+  .nav-logo span { color: var(--blue-glow); }
+  .nav-links { display:flex; gap: 2rem; list-style:none; }
+  .nav-links a {
+    color: var(--white-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--blue-glow); }
+  .nav-cta {
+    display: flex; gap: 1rem; align-items: center;
+  }
+  .btn-login {
+    padding: 0.45rem 1.2rem;
+    border: 1px solid var(--border-glow);
+    background: transparent;
+    color: var(--blue-glow);
+    border-radius: 4px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-login:hover { background: rgba(59,158,255,0.1); }
+  .btn-signup {
+    padding: 0.45rem 1.2rem;
+    background: var(--blue);
+    border: 1px solid var(--blue-light);
+    color: #fff;
+    border-radius: 4px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-signup:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 0 5vw;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 70% 50%, rgba(21,96,189,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(59,158,255,0.08) 0%, transparent 60%),
+      var(--navy);
+  }
+  .hero-grid {
+    position: absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(43,125,233,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(43,125,233,0.07) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
+  }
+  .hero-content { position:relative; z-index:2; max-width: 700px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(43,125,233,0.12);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.9rem;
+    border-radius: 2px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--blue-glow);
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  .hero-tag::before {
+    content:'';
+    width:6px; height:6px;
+    border-radius:50%;
+    background: var(--blue-glow);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100%{ opacity:1; transform:scale(1);}
+    50%{ opacity:0.4; transform:scale(0.7);}
+  }
+  .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 .line-accent { color: var(--blue-glow); }
+  .hero h1 .line-stroke {
+    -webkit-text-stroke: 1px var(--blue-light);
+    color: transparent;
+  }
+  .hero-desc {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--white-muted);
+    line-height: 1.7;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+  }
+  .hero-actions { display:flex; gap: 1rem; flex-wrap:wrap; }
+  .btn-primary {
+    padding: 0.85rem 2rem;
+    background: var(--blue);
+    border: 1px solid var(--blue-light);
+    color: #fff;
+    border-radius: 4px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.25s;
+    text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary:hover { background: var(--blue-light); transform:translateY(-2px); box-shadow: 0 8px 30px rgba(43,125,233,0.35); }
+  .btn-outline {
+    padding: 0.85rem 2rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white-muted);
+    border-radius: 4px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.25s;
+    text-decoration:none;
+  }
+  .btn-outline:hover { border-color: var(--border-glow); color:var(--white); }
+  .hero-stats {
+    position: absolute; bottom: 3rem; right: 5vw;
+    display: flex; gap: 3rem;
+  }
+  .stat { text-align:right; }
+  .stat-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--blue-glow);
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--white-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 6rem 5vw; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--blue-glow);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .section-sub {
+    color: var(--white-muted);
+    font-size: 0.95rem;
+    max-width: 500px;
+    line-height:1.7;
+    margin-bottom: 3rem;
+  }
+
+  /* ─── FEATURED GAMES ─── */
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+    gap: 1.5rem;
+  }
+  .game-card {
+    background: var(--navy-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: all 0.3s;
+    position:relative;
+  }
+  .game-card:hover { border-color: var(--border-glow); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,30,0.5); }
+  .game-thumb {
+    width:100%;
+    aspect-ratio: 16/9;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 4rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .game-thumb.t1 { background: linear-gradient(135deg, #061830 0%, #0d3060 50%, #0a1e40 100%); }
+  .game-thumb.t2 { background: linear-gradient(135deg, #0a0a20 0%, #1a0a40 50%, #080818 100%); }
+  .game-thumb.t3 { background: linear-gradient(135deg, #0d1a0d 0%, #0a2d1a 50%, #061810 100%); }
+  .game-thumb.t4 { background: linear-gradient(135deg, #200a0a 0%, #3d1010 50%, #180808 100%); }
+  .game-thumb.t5 { background: linear-gradient(135deg, #1a1208 0%, #3d2a0a 50%, #180f04 100%); }
+  .game-thumb.t6 { background: linear-gradient(135deg, #0a1a2d 0%, #0d2d3d 50%, #061520 100%); }
+  .game-thumb::after {
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(2,11,24,0.8) 100%);
+  }
+  .game-badge {
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-family:'Space Mono',monospace;
+    font-size:0.62rem;
+    letter-spacing:1px;
+    padding: 3px 8px;
+    border-radius:2px;
+    text-transform:uppercase;
+  }
+  .badge-new { background: var(--blue); color:#fff; }
+  .badge-hot { background: #8b1a1a; color:#ffcccc; }
+  .badge-free { background: #0a4020; color:#80ffcc; }
+  .game-info { padding: 1rem; }
+  .game-name {
+    font-family:'Rajdhani',sans-serif;
+    font-size:1.15rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:0.3rem;
+  }
+  .game-meta {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top: 0.8rem;
+  }
+  .game-genre {
+    font-size:0.72rem;
+    color:var(--white-muted);
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+  .game-rating {
+    font-family:'Space Mono',monospace;
+    font-size:0.78rem;
+    color: var(--blue-glow);
+  }
+  .game-desc {
+    font-size:0.82rem;
+    color:var(--white-muted);
+    line-height:1.5;
+    margin-top:0.4rem;
+  }
+
+  /* ─── NEWS SECTION ─── */
+  #news { background: var(--black); }
+  .news-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+  .news-featured {
+    background: var(--navy-2);
+    border: 1px solid var(--border);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .news-featured-img {
+    height: 260px;
+    background: linear-gradient(135deg, #061830, #0f3060, #061830);
+    display:flex; align-items:center; justify-content:center;
+    font-size:5rem;
+    position:relative;
+  }
+  .news-featured-img::after {
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(to top, var(--navy-2) 0%, transparent 50%);
+  }
+  .news-featured-body { padding: 1.5rem; }
+  .news-cat {
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--blue-glow);
+    margin-bottom:0.5rem;
+  }
+  .news-title {
+    font-family:'Rajdhani',sans-serif;
+    font-size:1.4rem;
+    font-weight:700;
+    text-transform:uppercase;
+    line-height:1.2;
+    margin-bottom:0.75rem;
+  }
+  .news-excerpt { font-size:0.85rem; color:var(--white-muted); line-height:1.6; }
+  .news-date { font-size:0.72rem; color:var(--white-muted); margin-top:0.8rem; font-family:'Space Mono',monospace; }
+  .news-list { display:flex; flex-direction:column; gap:1rem; }
+  .news-item {
+    background:var(--navy-2);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:1rem;
+    transition:all 0.2s;
+  }
+  .news-item:hover { border-color:var(--border-glow); }
+
+  /* ─── CATEGORIES ─── */
+  .cats-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
+    gap:1rem;
+  }
+  .cat-card {
+    background:var(--navy-2);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding: 1.5rem 1rem;
+    text-align:center;
+    transition:all 0.3s;
+  }
+  .cat-card:hover { border-color:var(--border-glow); background:var(--navy-3); transform:scale(1.02); }
+  .cat-icon { font-size:2.2rem; margin-bottom:0.6rem; }
+  .cat-name {
+    font-family:'Rajdhani',sans-serif;
+    font-size:0.95rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+  .cat-count { font-size:0.72rem; color:var(--white-muted); margin-top:0.2rem; font-family:'Space Mono',monospace; }
+
+  /* ─── LOGIN MODAL ─── */
+  .modal-overlay {
+    display:none;
+    position:fixed; inset:0; z-index:5000;
+    background:rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    align-items:center; justify-content:center;
+  }
+  .modal-overlay.active { display:flex; }
+  .modal {
+    background: var(--navy-2);
+    border: 1px solid var(--border);
+    border-radius:8px;
+    width:100%; max-width:420px;
+    padding: 2.5rem;
+    position:relative;
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform:scale(0.94) translateY(10px); }
+    to { opacity:1; transform:scale(1) translateY(0); }
+  }
+  .modal-close {
+    position:absolute; top:1rem; right:1rem;
+    background:transparent; border:none;
+    color:var(--white-muted); font-size:1.4rem;
+    line-height:1;
+    transition:color 0.2s;
+  }
+  .modal-close:hover { color:var(--white); }
+  .modal-logo {
+    font-family:'Rajdhani',sans-serif;
+    font-size:1.4rem; font-weight:700; letter-spacing:2px;
+    text-transform:uppercase;
+    text-align:center;
+    margin-bottom:0.3rem;
+  }
+  .modal-logo span { color:var(--blue-glow); }
+  .modal-subtitle {
+    text-align:center;
+    color:var(--white-muted);
+    font-size:0.82rem;
+    margin-bottom:2rem;
+  }
+  .google-btn {
+    width:100%;
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    padding:0.85rem;
+    background:#fff;
+    border:none;
+    border-radius:4px;
+    font-family:'Exo 2',sans-serif;
+    font-size:0.9rem;
+    font-weight:600;
+    color:#222;
+    transition:all 0.2s;
+    margin-bottom:1.5rem;
+  }
+  .google-btn:hover { background:#f0f0f0; transform:translateY(-1px); box-shadow:0 4px 20px rgba(0,0,0,0.3); }
+  .google-icon {
+    width:20px; height:20px;
+  }
+  .divider {
+    display:flex; align-items:center; gap:1rem;
+    margin-bottom:1.5rem;
+  }
+  .divider::before,.divider::after {
+    content:''; flex:1; height:1px; background:var(--border);
+  }
+  .divider span { font-size:0.72rem; color:var(--white-muted); letter-spacing:1px; text-transform:uppercase; font-family:'Space Mono',monospace; }
+  .input-group { margin-bottom:1rem; }
+  .input-group label {
+    display:block;
+    font-size:0.72rem;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--white-muted);
+    margin-bottom:0.4rem;
+    font-family:'Space Mono',monospace;
+  }
+  .input-group input {
+    width:100%;
+    background:var(--navy-3);
+    border:1px solid var(--border);
+    color:var(--white);
+    padding:0.7rem 1rem;
+    border-radius:4px;
+    font-family:'Exo 2',sans-serif;
+    font-size:0.9rem;
+    outline:none;
+    transition:border-color 0.2s;
+  }
+  .input-group input:focus { border-color:var(--border-glow); }
+  .input-group input::placeholder { color: rgba(168,184,208,0.4); }
+  .modal-submit {
+    width:100%;
+    padding:0.85rem;
+    background:var(--blue);
+    border:1px solid var(--blue-light);
+    color:#fff;
+    border-radius:4px;
+    font-family:'Rajdhani',sans-serif;
+    font-size:1rem;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    transition:all 0.2s;
+    margin-top:0.5rem;
+  }
+  .modal-submit:hover { background:var(--blue-light); transform:translateY(-1px); }
+  .modal-switch {
+    text-align:center;
+    margin-top:1.2rem;
+    font-size:0.82rem;
+    color:var(--white-muted);
+  }
+  .modal-switch a { color:var(--blue-glow); text-decoration:none; }
+  .modal-switch a:hover { text-decoration:underline; }
+
+  /* logged in state */
+  .user-badge {
+    display:none;
+    align-items:center;
+    gap:8px;
+  }
+  .user-avatar {
+    width:32px; height:32px;
+    border-radius:50%;
+    background:var(--blue);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Rajdhani',sans-serif;
+    font-weight:700;
+    font-size:0.8rem;
+    border:1px solid var(--blue-glow);
+  }
+  .user-name {
+    font-size:0.82rem;
+    color:var(--white-muted);
+    font-family:'Space Mono',monospace;
+    max-width:100px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .btn-logout {
+    background:transparent;
+    border:1px solid rgba(200,50,50,0.3);
+    color:rgba(255,100,100,0.7);
+    padding:0.3rem 0.6rem;
+    border-radius:4px;
+    font-size:0.7rem;
+    font-family:'Space Mono',monospace;
+    transition:all 0.2s;
+  }
+  .btn-logout:hover { border-color:rgba(200,50,50,0.7); color:rgba(255,100,100,1); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background:var(--black);
+    border-top:1px solid var(--border);
+    padding:3rem 5vw;
+    display:grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+  }
+  .footer-brand p { color:var(--white-muted); font-size:0.82rem; line-height:1.7; margin-top:0.75rem; }
+  .footer-col h4 {
+    font-family:'Rajdhani',sans-serif;
+    font-size:0.85rem;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--white-muted);
+    margin-bottom:1rem;
+  }
+  .footer-col a {
+    display:block;
+    color:var(--white-muted);
+    text-decoration:none;
+    font-size:0.82rem;
+    margin-bottom:0.5rem;
+    transition:color 0.2s;
+  }
+  .footer-col a:hover { color:var(--white); }
+  .footer-bottom {
+    background:var(--black);
+    border-top:1px solid var(--border);
+    padding:1.2rem 5vw;
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.72rem;
+    color:var(--white-muted);
+    font-family:'Space Mono',monospace;
+  }
+
+  /* ─── NOTIFICATION TOAST ─── */
+  .toast {
+    position:fixed;
+    bottom:2rem; right:2rem;
+    background:var(--navy-3);
+    border:1px solid var(--border-glow);
+    border-radius:6px;
+    padding:1rem 1.5rem;
+    z-index:9000;
+    display:flex; align-items:center; gap:12px;
+    font-size:0.85rem;
+    transform:translateY(100px);
+    opacity:0;
+    transition:all 0.3s;
+    max-width:320px;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast-icon { font-size:1.2rem; }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .reveal {
+    opacity:0;
+    transform:translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity:1; transform:none; }
+
+  @media(max-width:900px){
+    nav .nav-links { display:none; }
+    .news-grid { grid-template-columns:1fr; }
+    footer { grid-template-columns:1fr 1fr; }
+    .hero-stats { display:none; }
+  }
+  @media(max-width:600px){
+    footer { grid-template-columns:1fr; }
+    .hero h1 { font-size:3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Nexus<span>Play</span></div>
+  <ul class="nav-links">
+    <li><a href="#games">Jogos</a></li>
+    <li><a href="#news">Notícias</a></li>
+    <li><a href="#categories">Categorias</a></li>
+    <li><a href="#community">Comunidade</a></li>
+  </ul>
+  <div class="nav-cta">
+    <div class="user-badge" id="userBadge">
+      <div class="user-avatar" id="userAvatar">??</div>
+      <span class="user-name" id="userName">Jogador</span>
+      <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+    <div id="authButtons">
+      <button class="btn-login" onclick="openModal('login')" style="margin-right:0.5rem">Entrar</button>
+      <button class="btn-signup" onclick="openModal('signup')">Criar Conta</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">// Plataforma Gamer Brasileira</div>
+    <h1>
+      O Universo<br>
+      <span class="line-accent">dos Games</span><br>
+      <span class="line-stroke">te Espera</span>
+    </h1>
+    <p class="hero-desc">
+      Descubra os melhores jogos, fique por dentro das últimas novidades e conecte-se com a maior comunidade gamer do Brasil.
+    </p>
+    <div class="hero-actions">
+      <a href="#games" class="btn-primary">▶ Explorar Jogos</a>
+      <button class="btn-outline" onclick="openModal('signup')">Criar Conta Grátis</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">48K+</div>
+      <div class="stat-label">Jogadores Ativos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">1.2K</div>
+      <div class="stat-label">Jogos no Catálogo</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">99ms</div>
+      <div class="stat-label">Latência Média</div>
+    </div>
+  </div>
+</section>
+
+<!-- GAMES -->
+<section id="games">
+  <p class="section-label reveal">// Catálogo em Destaque</p>
+  <h2 class="section-title reveal">Jogos em Alta</h2>
+  <p class="section-sub reveal">Os títulos mais jogados e comentados da comunidade essa semana.</p>
+  <div class="games-grid">
+
+    <div class="game-card reveal">
+      <div class="game-thumb t1">
+        <span style="z-index:2">⚔️</span>
+        <span class="game-badge badge-hot">🔥 Hot</span>
+      </div>
+      <div class="game-info">
+        <div class="game-name">Shadow Realm Chronicles</div>
+        <div class="game-desc">RPG de ação em mundo aberto com combate fluido e narrativa épica.</div>
+        <div class="game-meta">
+          <span class="game-genre">RPG / Ação</span>
+          <span class="game-rating">★ 9.4</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-card reveal">
+      <div class="game-thumb t2">
+        <span style="z-index:2">🚀</span>
+        <span class="game-badge badge-new">Novo</span>
+      </div>
+      <div class="game-info">
+        <div class="game-name">Void Protocol</div>
+        <div class="game-desc">FPS sci-fi multiplayer com mecânicas de gravidade inovadoras.</div>
+        <div class="game-meta">
+          <span class="game-genre">FPS / Sci-Fi</span>
+          <span class="game-rating">★ 8.7</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-card reveal">
+      <div class="game-thumb t3">
+        <span style="z-index:2">🌿</span>
+        <span class="game-badge badge-free">Grátis</span>
+      </div>
+      <div class="game-info">
+        <div class="game-name">Verdant Survival</div>
+        <div class="game-desc">Sobrevivência em mundo aberto com crafting e construção de bases.</div>
+        <div class="game-meta">
+          <span class="game-genre">Survival / Craft</span>
+          <span class="game-rating">★ 8.1</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-card reveal">
+      <div class="game-thumb t4">
+        <span style="z-index:2">👊</span>
+        <span class="game-badge badge-hot">🔥 Hot</span>
+      </div>
+      <div class="game-info">
+        <div class="game-name">Iron Fist Arena</div>
+        <div class="game-desc">Luta 2D com 80 personagens e modo torneio online ranqueado.</div>
+        <div class="game-meta">
+          <span class="game-genre">Luta / PVP</span>
+          <span class="game-rating">★ 9.1</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-card reveal">
+      <div class="game-thumb t5">
+        <span style="z-index:2">🏎️</span>
+        <span class="game-badge badge-new">Novo</span>
+      </div>
+      <div class="game-info">
+        <div class="game-name">Nitro Rush Legends</div>
+        <div class="game-desc">Corrida arcade com pistas destruíveis e personalização total.</div>
+        <div class="game-meta">
+          <span class="game-genre">Corrida / Arcade</span>
+          <span class="game-rating">★ 8.5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-card reveal">
+      <div class="game-thumb t6">
+        <span style="z-index:2">🧩</span>
+        <span class="game-badge badge-free">Grátis</span>
+      </div>
+      <div class="game-info">
+        <div class="game-name">Mind Fracture</div>
+        <div class="game-desc">Puzzle cerebral com 500+ fases e estética psicodélica única.</div>
+        <div class="game-meta">
+          <span class="game-genre">Puzzle / Indie</span>
+          <span class="game-rating">★ 8.9</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- NEWS -->
+<section id="news">
+  <p class="section-label reveal">// Feed de Notícias</p>
+  <h2 class="section-title reveal">Últimas do Mundo Gamer</h2>
+  <p class="section-sub reveal">Fique por dentro dos lançamentos, patches e eventos da semana.</p>
+  <div class="news-grid reveal">
+    <div class="news-featured">
+      <div class="news-featured-img">🎮</div>
+      <div class="news-featured-body">
+        <div class="news-cat">// Lançamento</div>
+        <div class="news-title">Shadow Realm Chronicles 2 Anunciado com Trailer Cinemático</div>
+        <div class="news-excerpt">A sequência do aclamado RPG já tem data de lançamento confirmada e promete um mundo três vezes maior com IA generativa para NPCs únicos em cada partida.</div>
+        <div class="news-date">27 MAI 2025 · 4 MIN DE LEITURA</div>
+      </div>
+    </div>
+    <div class="news-list">
+      <div class="news-item">
+        <div class="news-cat">// Patch Notes</div>
+        <div class="news-title" style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;line-height:1.2">Void Protocol v2.4 — Novo mapa e balanceamento</div>
+        <div class="news-date" style="font-size:0.7rem;color:var(--white-muted);margin-top:0.4rem;font-family:'Space Mono',monospace">25 MAI 2025</div>
+      </div>
+      <div class="news-item">
+        <div class="news-cat">// E-Sports</div>
+        <div class="news-title" style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;line-height:1.2">FURIA vence CBLOL com virada histórica no game 5</div>
+        <div class="news-date" style="font-size:0.7rem;color:var(--white-muted);margin-top:0.4rem;font-family:'Space Mono',monospace">24 MAI 2025</div>
+      </div>
+      <div class="news-item">
+        <div class="news-cat">// Hardware</div>
+        <div class="news-title" style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;line-height:1.2">RTX 5090 bate recordes em benchmark 8K ultrawide</div>
+        <div class="news-date" style="font-size:0.7rem;color:var(--white-muted);margin-top:0.4rem;font-family:'Space Mono',monospace">22 MAI 2025</div>
+      </div>
+      <div class="news-item">
+        <div class="news-cat">// Indie</div>
+        <div class="news-title" style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;line-height:1.2">Estúdio brasileiro Mind Fracture ultrapassa 2M de downloads</div>
+        <div class="news-date" style="font-size:0.7rem;color:var(--white-muted);margin-top:0.4rem;font-family:'Space Mono',monospace">20 MAI 2025</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories">
+  <p class="section-label reveal">// Explorar por Gênero</p>
+  <h2 class="section-title reveal">Categorias</h2>
+  <p class="section-sub reveal">Encontre exatamente o tipo de jogo que você procura.</p>
+  <div class="cats-grid">
+    <div class="cat-card reveal"><div class="cat-icon">⚔️</div><div class="cat-name">RPG</div><div class="cat-count">234 jogos</div></div>
+    <div class="cat-card reveal"><div class="cat-icon">🔫</div><div class="cat-name">FPS</div><div class="cat-count">187 jogos</div></div>
+    <div class="cat-card reveal"><div class="cat-icon">🏆</div><div class="cat-name">E-Sports</div><div class="cat-count">56 jogos</div></div>
+    <div class="cat-card reveal"><div class="cat-icon">🧩</div><div class="cat-name">Puzzle</div><div class="cat-count">312 jogos</div></div>
+    <div class="cat-card reveal"><div class="cat-icon">🏎️</div><div class="cat-name">Corrida</div><div class="cat-count">98 jogos</div></div>
+    <div class="cat-card reveal"><div class="cat-icon">⚽</div><div class="cat-name">Esportes</div><div class="cat-count">74 jogos</div></div>
+    <div class="cat-card reveal"><div class="cat-icon">🌌</div><div class="cat-name">Sci-Fi</div><div class="cat-count">143 jogos</div></div>
+    <div class="cat-card reveal"><div class="cat-icon">👻</div><div class="cat-name">Horror</div><div class="cat-count">89 jogos</div></div>
+  </div>
+</section>
+
+<!-- COMMUNITY CTA -->
+<section id="community" style="background:var(--navy-3); border-top:1px solid var(--border); border-bottom:1px solid var(--border); text-align:center; padding:5rem 5vw;">
+  <p class="section-label reveal" style="text-align:center">// Junte-se a nós</p>
+  <h2 class="section-title reveal" style="text-align:center">Faça Parte da Comunidade</h2>
+  <p class="section-sub reveal" style="margin:0 auto 2.5rem; text-align:center">Crie sua conta, monte sua biblioteca, poste reviews e conecte com outros gamers que curtem o mesmo que você.</p>
+  <div class="reveal" style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+    <button class="btn-primary" onclick="openModal('signup')">▶ Criar Conta Grátis</button>
+    <button class="btn-outline" onclick="openModal('login')">Já tenho conta</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="nav-logo">Nexus<span>Play</span></div>
+    <p>A plataforma definitiva para a comunidade gamer brasileira. Descubra jogos, acompanhe notícias e conecte-se com outros jogadores.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Plataforma</h4>
+    <a href="#">Catálogo</a>
+    <a href="#">Novidades</a>
+    <a href="#">Gratuitos</a>
+    <a href="#">Em Alta</a>
+  </div>
+  <div class="footer-col">
+    <h4>Comunidade</h4>
+    <a href="#">Fórum</a>
+    <a href="#">Discord</a>
+    <a href="#">Rankings</a>
+    <a href="#">Torneios</a>
+  </div>
+  <div class="footer-col">
+    <h4>Suporte</h4>
+    <a href="#">Sobre Nós</a>
+    <a href="#">Contato</a>
+    <a href="#">Privacidade</a>
+    <a href="#">Termos de Uso</a>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2025 NexusPlay — Todos os direitos reservados.</span>
+  <span>Feito com 💙 no Brasil</span>
+</div>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">Nexus<span>Play</span></div>
+    <div class="modal-subtitle" id="modalSubtitle">Acesse sua conta de jogador</div>
+
+    <!-- Google Login -->
+    <button class="google-btn" onclick="loginWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Continuar com Google
+    </button>
+
+    <div class="divider"><span>ou</span></div>
+
+    <!-- Manual form -->
+    <div id="formLogin">
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="loginEmail" placeholder="seuemail@exemplo.com">
+      </div>
+      <div class="input-group">
+        <label>Senha</label>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </div>
+      <button class="modal-submit" onclick="loginManual()">Entrar na Conta</button>
+      <div class="modal-switch">Não tem conta? <a href="#" onclick="switchModal('signup')">Criar agora</a></div>
+    </div>
+
+    <div id="formSignup" style="display:none">
+      <div class="input-group">
+        <label>Nome de Jogador</label>
+        <input type="text" id="signupName" placeholder="SeuGamerTag123">
+      </div>
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="signupEmail" placeholder="seuemail@exemplo.com">
+      </div>
+      <div class="input-group">
+        <label>Senha</label>
+        <input type="password" id="signupPassword" placeholder="Min. 8 caracteres">
+      </div>
+      <button class="modal-submit" onclick="signupManual()">Criar Conta</button>
+      <div class="modal-switch">Já tem conta? <a href="#" onclick="switchModal('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastMsg">Bem-vindo!</span>
+</div>
+
+<script>
+  // ── MODAL ──
+  let currentModal = 'login';
+  function openModal(type){
+    currentModal = type;
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('formLogin').style.display = type==='login'?'block':'none';
+    document.getElementById('formSignup').style.display = type==='signup'?'block':'none';
+    document.getElementById('modalSubtitle').textContent = type==='login'
+      ? 'Acesse sua conta de jogador'
+      : 'Crie sua conta gratuita';
+  }
+  function closeModal(){ document.getElementById('modalOverlay').classList.remove('active'); }
+  function handleOverlayClick(e){ if(e.target.id==='modalOverlay') closeModal(); }
+  function switchModal(type){ openModal(type); }
+
+  // ── GOOGLE LOGIN SIMULATION ──
+  function loginWithGoogle(){
+    const names = ['GamerBR','Shadow_Wolf','NitroX','CyberNinja','PixelHunter'];
+    const name = names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*999);
+    setLoggedIn(name);
+    closeModal();
+    showToast('🎮 Login com Google realizado!', name);
+  }
+
+  // ── MANUAL LOGIN ──
+  function loginManual(){
+    const email = document.getElementById('loginEmail').value;
+    const pass  = document.getElementById('loginPassword').value;
+    if(!email||!pass){ showToast('⚠️','Preencha e-mail e senha'); return; }
+    const name = email.split('@')[0];
+    setLoggedIn(name);
+    closeModal();
+    showToast('🎮', 'Login realizado! Bem-vindo, '+name);
+  }
+
+  // ── SIGNUP ──
+  function signupManual(){
+    const name  = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const pass  = document.getElementById('signupPassword').value;
+    if(!name||!email||!pass){ showToast('⚠️','Preencha todos os campos'); return; }
+    if(pass.length<6){ showToast('⚠️','Senha deve ter 6+ caracteres'); return; }
+    setLoggedIn(name);
+    closeModal();
+    showToast('🎉','Conta criada! Bem-vindo, '+name+'!');
+  }
+
+  // ── SET LOGGED IN ──
+  function setLoggedIn(name){
+    localStorage.setItem('nexusplay_user', name);
+    updateUI(name);
+  }
+
+  function updateUI(name){
+    if(!name) return;
+    document.getElementById('authButtons').style.display='none';
+    const badge = document.getElementById('userBadge');
+    badge.style.display='flex';
+    document.getElementById('userName').textContent = name;
+    document.getElementById('userAvatar').textContent = name.slice(0,2).toUpperCase();
+  }
+
+  function logout(){
+    localStorage.removeItem('nexusplay_user');
+    document.getElementById('authButtons').style.display='flex';
+    document.getElementById('userBadge').style.display='none';
+    showToast('👋','Até logo!');
+  }
+
+  // ── TOAST ──
+  function showToast(icon, msg){
+    const t = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3500);
+  }
+
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); } });
+  }, { threshold:0.1, rootMargin:'0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+  // ── PERSIST LOGIN ──
+  const saved = localStorage.getItem('nexusplay_user');
+  if(saved) updateUI(saved);
+
+  // ── STAGGER DELAYS ──
+  document.querySelectorAll('.game-card.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i*0.08)+'s'; });
+  document.querySelectorAll('.cat-card.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i*0.05)+'s'; });
+</script>
+</body>
+</html>
