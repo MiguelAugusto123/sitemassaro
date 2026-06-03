@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NexusPlay — Hub de Games</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -414,6 +416,12 @@
     letter-spacing:1px;
   }
   .cat-count { font-size:0.72rem; color:var(--white-muted); margin-top:0.2rem; font-family:'Space Mono',monospace; }
+
+
+  .modal-error { background:rgba(200,50,50,0.15); border:1px solid rgba(200,50,50,0.4); color:#ff8888; font-size:0.8rem; padding:0.6rem 0.9rem; border-radius:4px; margin-bottom:1rem; text-align:center; display:none; }
+  .modal-error.show { display:block; }
+  .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px; }
+  @keyframes spin { to{transform:rotate(360deg);} }
 
   /* ─── LOGIN MODAL ─── */
   .modal-overlay {
@@ -912,9 +920,10 @@
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-logo">Nexus<span>Play</span></div>
     <div class="modal-subtitle" id="modalSubtitle">Acesse sua conta de jogador</div>
+    <div class="modal-error" id="modalError"></div>
 
     <!-- Google Login -->
-    <button class="google-btn" onclick="loginWithGoogle()">
+    <button class="google-btn" id="googleBtn" onclick="loginWithGoogle()">
       <svg class="google-icon" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -924,7 +933,7 @@
       Continuar com Google
     </button>
 
-    <div class="divider"><span>ou</span></div>
+    <div class="divider"><span>ou use seu e-mail</span></div>
 
     <!-- Manual form -->
     <div id="formLogin">
@@ -936,15 +945,11 @@
         <label>Senha</label>
         <input type="password" id="loginPassword" placeholder="••••••••">
       </div>
-      <button class="modal-submit" onclick="loginManual()">Entrar na Conta</button>
+      <button class="modal-submit" id="loginBtn" onclick="loginManual()">Entrar na Conta</button>
       <div class="modal-switch">Não tem conta? <a href="#" onclick="switchModal('signup')">Criar agora</a></div>
     </div>
 
     <div id="formSignup" style="display:none">
-      <div class="input-group">
-        <label>Nome de Jogador</label>
-        <input type="text" id="signupName" placeholder="SeuGamerTag123">
-      </div>
       <div class="input-group">
         <label>E-mail</label>
         <input type="email" id="signupEmail" placeholder="seuemail@exemplo.com">
@@ -953,7 +958,7 @@
         <label>Senha</label>
         <input type="password" id="signupPassword" placeholder="Min. 8 caracteres">
       </div>
-      <button class="modal-submit" onclick="signupManual()">Criar Conta</button>
+      <button class="modal-submit" id="signupBtn" onclick="signupManual()">Criar Conta</button>
       <div class="modal-switch">Já tem conta? <a href="#" onclick="switchModal('login')">Entrar</a></div>
     </div>
   </div>
@@ -966,95 +971,159 @@
 </div>
 
 <script>
-  // ── MODAL ──
+  // ══ SUPABASE INIT ══
+  const SUPABASE_URL = 'https://narevbzvpbnehdgvkloz.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_amCCcFW4FrZWmh4zkGEidA_oOwwKIzr';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ══ MODAL ══
   let currentModal = 'login';
-  function openModal(type){
+  function openModal(type) {
     currentModal = type;
     document.getElementById('modalOverlay').classList.add('active');
-    document.getElementById('formLogin').style.display = type==='login'?'block':'none';
-    document.getElementById('formSignup').style.display = type==='signup'?'block':'none';
-    document.getElementById('modalSubtitle').textContent = type==='login'
+    document.getElementById('formLogin').style.display  = type === 'login'  ? 'block' : 'none';
+    document.getElementById('formSignup').style.display = type === 'signup' ? 'block' : 'none';
+    document.getElementById('modalSubtitle').textContent = type === 'login'
       ? 'Acesse sua conta de jogador'
       : 'Crie sua conta gratuita';
+    hideError();
   }
-  function closeModal(){ document.getElementById('modalOverlay').classList.remove('active'); }
-  function handleOverlayClick(e){ if(e.target.id==='modalOverlay') closeModal(); }
-  function switchModal(type){ openModal(type); }
-
-  // ── GOOGLE LOGIN SIMULATION ──
-  function loginWithGoogle(){
-    const names = ['GamerBR','Shadow_Wolf','NitroX','CyberNinja','PixelHunter'];
-    const name = names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*999);
-    setLoggedIn(name);
-    closeModal();
-    showToast('🎮 Login com Google realizado!', name);
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+  function handleOverlayClick(e) { if(e.target.id==='modalOverlay') closeModal(); }
+  function switchModal(type) { openModal(type); return false; }
+  function showError(msg) { const el=document.getElementById('modalError'); el.textContent=msg; el.classList.add('show'); }
+  function hideError() { document.getElementById('modalError').classList.remove('show'); }
+  function setLoading(id, on, label) {
+    const b=document.getElementById(id);
+    b.disabled=on;
+    b.innerHTML=on?'<span class="spinner"></span> Aguarde...':label;
   }
 
-  // ── MANUAL LOGIN ──
-  function loginManual(){
-    const email = document.getElementById('loginEmail').value;
+  // ══ GOOGLE LOGIN REAL (redireciona para tela de escolha de conta Google) ══
+  async function loginWithGoogle() {
+    const btn = document.getElementById('googleBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Abrindo Google...';
+    hideError();
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    });
+    if (error) {
+      showError('Erro: ' + error.message);
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continuar com Google';
+    }
+    // Se sem erro: Supabase abre a tela de escolha de conta Google automaticamente
+  }
+
+  // ══ LOGIN EMAIL/SENHA ══
+  async function loginManual() {
+    const email = document.getElementById('loginEmail').value.trim();
     const pass  = document.getElementById('loginPassword').value;
-    if(!email||!pass){ showToast('⚠️','Preencha e-mail e senha'); return; }
-    const name = email.split('@')[0];
-    setLoggedIn(name);
+    if (!email||!pass) { showError('Preencha e-mail e senha.'); return; }
+    setLoading('loginBtn', true);
+    hideError();
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    setLoading('loginBtn', false, 'Entrar na Conta');
+    if (error) { showError(error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error.message); return; }
     closeModal();
-    showToast('🎮', 'Login realizado! Bem-vindo, '+name);
+    await salvarPerfil(data.user);
+    renderUser(data.user);
+    const nome = data.user.user_metadata?.full_name || data.user.email.split('@')[0];
+    showToast('🎮', 'Bem-vindo de volta, ' + nome + '!');
   }
 
-  // ── SIGNUP ──
-  function signupManual(){
-    const name  = document.getElementById('signupName').value;
-    const email = document.getElementById('signupEmail').value;
+  // ══ CADASTRO EMAIL/SENHA ══
+  async function signupManual() {
+    const email = document.getElementById('signupEmail').value.trim();
     const pass  = document.getElementById('signupPassword').value;
-    if(!name||!email||!pass){ showToast('⚠️','Preencha todos os campos'); return; }
-    if(pass.length<6){ showToast('⚠️','Senha deve ter 6+ caracteres'); return; }
-    setLoggedIn(name);
-    closeModal();
-    showToast('🎉','Conta criada! Bem-vindo, '+name+'!');
+    if (!email||!pass) { showError('Preencha e-mail e senha.'); return; }
+    if (pass.length<6)  { showError('Senha precisa ter pelo menos 6 caracteres.'); return; }
+    setLoading('signupBtn', true);
+    hideError();
+    const { data, error } = await sb.auth.signUp({ email, password: pass });
+    setLoading('signupBtn', false, 'Criar Conta');
+    if (error) { showError(error.message); return; }
+    if (data.user && !data.session) {
+      closeModal();
+      showToast('📧', 'Confirme seu e-mail para ativar a conta!');
+      return;
+    }
+    if (data.user) {
+      closeModal();
+      await salvarPerfil(data.user);
+      renderUser(data.user);
+      showToast('🎉', 'Conta criada! Bem-vindo ao NexusPlay!');
+    }
   }
 
-  // ── SET LOGGED IN ──
-  function setLoggedIn(name){
-    localStorage.setItem('nexusplay_user', name);
-    updateUI(name);
+  // ══ SALVAR PERFIL NO BANCO (tabela profiles) ══
+  async function salvarPerfil(user) {
+    if (!user) return;
+    try {
+      await sb.from('profiles').upsert({
+        id:         user.id,
+        email:      user.email,
+        nome:       user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0],
+        avatar_url: user.user_metadata?.avatar_url || null,
+        provider:   user.app_metadata?.provider || 'email',
+        ultimo_login: new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch(e) { console.warn('Tabela profiles não encontrada. Crie-a no Supabase SQL Editor.', e); }
   }
 
-  function updateUI(name){
-    if(!name) return;
-    document.getElementById('authButtons').style.display='none';
-    const badge = document.getElementById('userBadge');
-    badge.style.display='flex';
-    document.getElementById('userName').textContent = name;
-    document.getElementById('userAvatar').textContent = name.slice(0,2).toUpperCase();
+  // ══ RENDER USUÁRIO LOGADO NA NAVBAR ══
+  function renderUser(user) {
+    if (!user) return;
+    const nome   = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+    const avatar = user.user_metadata?.avatar_url;
+    document.getElementById('authButtons').style.display = 'none';
+    document.getElementById('userBadge').style.display   = 'flex';
+    document.getElementById('userName').textContent      = nome;
+    const avatarEl = document.getElementById('userAvatar');
+    if (avatar) {
+      avatarEl.innerHTML = '<img src="'+avatar+'" alt="'+nome+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    } else {
+      avatarEl.textContent = nome.slice(0,2).toUpperCase();
+    }
   }
 
-  function logout(){
-    localStorage.removeItem('nexusplay_user');
-    document.getElementById('authButtons').style.display='flex';
-    document.getElementById('userBadge').style.display='none';
-    showToast('👋','Até logo!');
+  // ══ LOGOUT ══
+  async function logout() {
+    await sb.auth.signOut();
+    document.getElementById('authButtons').style.display = 'flex';
+    document.getElementById('userBadge').style.display   = 'none';
+    document.getElementById('userAvatar').textContent    = '??';
+    showToast('👋', 'Até logo!');
   }
 
-  // ── TOAST ──
-  function showToast(icon, msg){
+  // ══ DETECTA SESSÃO AUTOMATICAMENTE (inclui retorno do redirect Google) ══
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (session?.user) {
+      renderUser(session.user);
+      if (event === 'SIGNED_IN') {
+        await salvarPerfil(session.user);
+        const nome = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email.split('@')[0];
+        showToast('🎮', 'Bem-vindo, ' + nome + '!');
+      }
+    }
+  });
+
+  // ══ TOAST ══
+  function showToast(icon, msg) {
     const t = document.getElementById('toast');
     document.getElementById('toastIcon').textContent = icon;
-    document.getElementById('toastMsg').textContent = msg;
+    document.getElementById('toastMsg').textContent  = msg;
     t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 3500);
+    setTimeout(()=>t.classList.remove('show'), 4000);
   }
 
-  // ── SCROLL REVEAL ──
+  // ══ SCROLL REVEAL ══
   const observer = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); } });
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold:0.1, rootMargin:'0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-
-  // ── PERSIST LOGIN ──
-  const saved = localStorage.getItem('nexusplay_user');
-  if(saved) updateUI(saved);
-
-  // ── STAGGER DELAYS ──
   document.querySelectorAll('.game-card.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i*0.08)+'s'; });
   document.querySelectorAll('.cat-card.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i*0.05)+'s'; });
 </script>
