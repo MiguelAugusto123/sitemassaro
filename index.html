@@ -1004,9 +1004,17 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Abrindo Google...';
     hideError();
+    // Limpa sessão anterior para garantir que abre a tela de escolha de conta
+    await sb.auth.signOut();
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.href }
+      options: {
+        redirectTo: window.location.href,
+        queryParams: {
+          prompt: 'select_account',   // força tela de escolha de conta sempre
+          access_type: 'offline'
+        }
+      }
     });
     if (error) {
       showError('Erro: ' + error.message);
