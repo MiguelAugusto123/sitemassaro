@@ -880,6 +880,37 @@
   </div>
 </section>
 
+<!-- CRUD: MINHA LISTA -->
+<section id="minhalista" style="background:var(--navy-2);border-top:1px solid var(--border);">
+  <p class="section-label reveal">// Minha Conta</p>
+  <h2 class="section-title reveal">Minha Lista de Jogos</h2>
+  <p class="section-sub reveal" id="crudMsg">Faça login para gerenciar sua lista de jogos favoritos.</p>
+
+  <div id="crudPanel" style="display:none">
+    <!-- CREATE -->
+    <div style="background:var(--navy-3);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem;max-width:500px;">
+      <h3 style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem;color:var(--blue-glow)">➕ Adicionar Jogo</h3>
+      <div class="input-group">
+        <label>Nome do Jogo</label>
+        <input type="text" id="crudNome" placeholder="Ex: The Witcher 3">
+      </div>
+      <div class="input-group">
+        <label>Gênero</label>
+        <input type="text" id="crudGenero" placeholder="Ex: RPG">
+      </div>
+      <div class="input-group">
+        <label>Nota (1-10)</label>
+        <input type="number" id="crudNota" placeholder="Ex: 9" min="1" max="10">
+      </div>
+      <button class="btn-primary" onclick="crudCreate()" style="margin-top:0.5rem;padding:0.65rem 1.5rem;">Adicionar à Lista</button>
+    </div>
+
+    <!-- READ -->
+    <div id="crudLista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;"></div>
+    <p id="crudVazio" style="color:var(--white-muted);font-size:0.9rem;display:none;">Nenhum jogo na lista ainda. Adicione o primeiro!</p>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-brand">
@@ -960,6 +991,16 @@
       <button class="modal-submit" id="signupBtn" onclick="signupManual()">Criar Conta</button>
       <div class="modal-switch">Já tem conta? <a href="#" onclick="switchModal('login')">Entrar</a></div>
     </div>
+    <!-- FORM RESET -->
+    <div id="formReset" style="display:none">
+      <p style="font-size:0.82rem;color:var(--white-muted);margin-bottom:1rem;text-align:center;">Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="resetEmail" placeholder="seuemail@exemplo.com">
+      </div>
+      <button class="modal-submit" id="resetBtn" onclick="resetPassword()">Enviar Link</button>
+      <div class="modal-switch">Lembrou a senha? <a href="#" onclick="switchModal('login');return false;">Voltar</a></div>
+    </div>
   </div>
 </div>
 
@@ -982,9 +1023,12 @@
     document.getElementById('modalOverlay').classList.add('active');
     document.getElementById('formLogin').style.display  = type === 'login'  ? 'block' : 'none';
     document.getElementById('formSignup').style.display = type === 'signup' ? 'block' : 'none';
-    document.getElementById('modalSubtitle').textContent = type === 'login'
-      ? 'Acesse sua conta de jogador'
-      : 'Crie sua conta gratuita';
+    document.getElementById('formReset').style.display  = type === 'reset'  ? 'block' : 'none';
+    const subtitles = { login:'Acesse sua conta de jogador', signup:'Crie sua conta gratuita', reset:'Redefinir senha' };
+    document.getElementById('modalSubtitle').textContent = subtitles[type] || '';
+    // Google btn only for login/signup
+    document.getElementById('googleBtn').style.display = type === 'reset' ? 'none' : 'flex';
+    document.querySelector('.divider').style.display    = type === 'reset' ? 'none' : 'flex';
     hideError();
   }
   function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
@@ -1113,6 +1157,7 @@
       await salvarPerfil(session.user);
       const nome = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email.split('@')[0];
       showToast('🎮', 'Bem-vindo, ' + nome + '!');
+      ativarCrud();
       // Limpa os parametros OAuth da URL sem recarregar a pagina
       if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -1130,6 +1175,7 @@
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
       renderUser(session.user);
+      ativarCrud();
     }
   })();
 
@@ -1140,6 +1186,93 @@
     document.getElementById('toastMsg').textContent  = msg;
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'), 4000);
+  }
+
+  // ══ RESET PASSWORD ══
+  async function resetPassword() {
+    const email = document.getElementById('resetEmail').value.trim();
+    if (!email) { showError('Digite seu e-mail.'); return; }
+    setLoading('resetBtn', true);
+    hideError();
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://nexus-play-jet.vercel.app'
+    });
+    setLoading('resetBtn', false, 'Enviar Link');
+    if (error) { showError(error.message); return; }
+    closeModal();
+    showToast('📧', 'Link enviado! Verifique seu e-mail.');
+  }
+
+  // ══ CRUD: MINHA LISTA DE JOGOS ══
+  async function crudCreate() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { showToast('⚠️', 'Faça login primeiro!'); return; }
+
+    const nome   = document.getElementById('crudNome').value.trim();
+    const genero = document.getElementById('crudGenero').value.trim();
+    const nota   = document.getElementById('crudNota').value;
+    if (!nome) { showToast('⚠️', 'Digite o nome do jogo!'); return; }
+
+    const { error } = await sb.from('jogos_favoritos').insert({
+      user_id: session.user.id,
+      nome,
+      genero,
+      nota: nota ? parseInt(nota) : null
+    });
+
+    if (error) { showToast('❌', 'Erro: ' + error.message); return; }
+
+    document.getElementById('crudNome').value   = '';
+    document.getElementById('crudGenero').value = '';
+    document.getElementById('crudNota').value   = '';
+    showToast('✅', 'Jogo adicionado!');
+    await crudRead();
+  }
+
+  async function crudRead() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+
+    const { data, error } = await sb.from('jogos_favoritos')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('criado_em', { ascending: false });
+
+    const lista = document.getElementById('crudLista');
+    const vazio = document.getElementById('crudVazio');
+
+    if (error || !data || data.length === 0) {
+      lista.innerHTML = '';
+      vazio.style.display = 'block';
+      return;
+    }
+
+    vazio.style.display = 'none';
+    lista.innerHTML = data.map(j => `
+      <div style="background:var(--navy-3);border:1px solid var(--border);border-radius:8px;padding:1.2rem;position:relative;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;margin-bottom:0.3rem;">${j.nome}</div>
+        <div style="font-size:0.78rem;color:var(--white-muted);margin-bottom:0.3rem;">${j.genero || 'Sem gênero'}</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.82rem;color:var(--blue-glow);">${j.nota ? '★ ' + j.nota + '/10' : 'Sem nota'}</div>
+        <button onclick="crudDelete('${j.id}')" style="position:absolute;top:0.8rem;right:0.8rem;background:rgba(200,50,50,0.15);border:1px solid rgba(200,50,50,0.3);color:rgba(255,100,100,0.8);padding:0.25rem 0.6rem;border-radius:4px;font-size:0.72rem;font-family:'Space Mono',monospace;cursor:pointer;">🗑 Deletar</button>
+      </div>
+    `).join('');
+  }
+
+  async function crudDelete(id) {
+    const { error } = await sb.from('jogos_favoritos').delete().eq('id', id);
+    if (error) { showToast('❌', 'Erro ao deletar.'); return; }
+    showToast('🗑', 'Jogo removido!');
+    await crudRead();
+  }
+
+  // Ativa painel CRUD quando logado
+  async function ativarCrud() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      document.getElementById('crudPanel').style.display = 'block';
+      document.getElementById('crudMsg').style.display   = 'none';
+      await crudRead();
+    }
   }
 
   // ══ SCROLL REVEAL ══
