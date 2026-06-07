@@ -1002,6 +1002,20 @@
       <button class="modal-submit" id="resetBtn" onclick="resetPassword()">Enviar Link</button>
       <div class="modal-switch">Lembrou a senha? <a href="#" onclick="switchModal('login');return false;">Voltar</a></div>
     </div>
+
+    <!-- FORM NOVA SENHA -->
+    <div id="formNewPassword" style="display:none">
+      <p style="font-size:0.82rem;color:var(--white-muted);margin-bottom:1rem;text-align:center;">Digite sua nova senha abaixo.</p>
+      <div class="input-group">
+        <label>Nova Senha</label>
+        <input type="password" id="newPassword" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="input-group">
+        <label>Confirmar Nova Senha</label>
+        <input type="password" id="confirmPassword" placeholder="Repita a senha">
+      </div>
+      <button class="modal-submit" id="newPasswordBtn" onclick="applyNewPassword()">Salvar Nova Senha</button>
+    </div>
   </div>
 </div>
 
@@ -1024,12 +1038,14 @@
     document.getElementById('modalOverlay').classList.add('active');
     document.getElementById('formLogin').style.display  = type === 'login'  ? 'block' : 'none';
     document.getElementById('formSignup').style.display = type === 'signup' ? 'block' : 'none';
-    document.getElementById('formReset').style.display  = type === 'reset'  ? 'block' : 'none';
-    const subtitles = { login:'Acesse sua conta de jogador', signup:'Crie sua conta gratuita', reset:'Redefinir senha' };
+    document.getElementById('formReset').style.display       = type === 'reset'       ? 'block' : 'none';
+    document.getElementById('formNewPassword').style.display = type === 'newpassword' ? 'block' : 'none';
+    const subtitles = { login:'Acesse sua conta de jogador', signup:'Crie sua conta gratuita', reset:'Redefinir senha', newpassword:'Criar nova senha' };
     document.getElementById('modalSubtitle').textContent = subtitles[type] || '';
     // Google btn only for login/signup
-    document.getElementById('googleBtn').style.display = type === 'reset' ? 'none' : 'flex';
-    document.querySelector('.divider').style.display    = type === 'reset' ? 'none' : 'flex';
+    const hideGoogle = type === 'reset' || type === 'newpassword';
+    document.getElementById('googleBtn').style.display = hideGoogle ? 'none' : 'flex';
+    document.querySelector('.divider').style.display    = hideGoogle ? 'none' : 'flex';
     hideError();
   }
   function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
@@ -1153,6 +1169,11 @@
 
   // ══ DETECTA SESSÃO AUTOMATICAMENTE (inclui retorno do redirect Google) ══
   sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      // Abre modal para digitar nova senha
+      openModal('newpassword');
+      return;
+    }
     if (event === 'SIGNED_IN' && session?.user) {
       renderUser(session.user);
       await salvarPerfil(session.user);
@@ -1274,6 +1295,25 @@
       document.getElementById('crudMsg').style.display   = 'none';
       await crudRead();
     }
+  }
+
+  // ══ APLICAR NOVA SENHA ══
+  async function applyNewPassword() {
+    const nova    = document.getElementById('newPassword').value;
+    const confirma = document.getElementById('confirmPassword').value;
+    if (!nova || !confirma) { showError('Preencha os dois campos.'); return; }
+    if (nova !== confirma)  { showError('As senhas não coincidem.'); return; }
+    if (nova.length < 6)    { showError('Mínimo 6 caracteres.'); return; }
+    setLoading('newPasswordBtn', true);
+    hideError();
+    const { error } = await sb.auth.updateUser({ password: nova });
+    setLoading('newPasswordBtn', false, 'Salvar Nova Senha');
+    if (error) { showError(error.message); return; }
+    closeModal();
+    showToast('✅', 'Senha atualizada! Faça login com a nova senha.');
+    await sb.auth.signOut();
+    document.getElementById('authButtons').style.display = 'flex';
+    document.getElementById('userBadge').style.display   = 'none';
   }
 
   // ══ SCROLL REVEAL ══
