@@ -1216,13 +1216,25 @@
     if (!email) { showError('Digite seu e-mail.'); return; }
     setLoading('resetBtn', true);
     hideError();
-    const { error } = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://nexus-play-jet.vercel.app'
-    });
-    setLoading('resetBtn', false, 'Enviar Link');
-    if (error) { showError(error.message); return; }
-    closeModal();
-    showToast('📧', 'Link enviado! Verifique seu e-mail.');
+    try {
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://nexus-play-jet.vercel.app/?type=recovery'
+      });
+      setLoading('resetBtn', false, 'Enviar Link');
+      if (error) {
+        if (error.message.includes('rate limit') || error.status === 429) {
+          showError('Muitas tentativas. Aguarde alguns minutos e tente de novo.');
+        } else {
+          showError('Erro: ' + error.message);
+        }
+        return;
+      }
+      closeModal();
+      showToast('📧', 'Se esse e-mail estiver cadastrado, o link foi enviado!');
+    } catch(e) {
+      setLoading('resetBtn', false, 'Enviar Link');
+      showError('Erro de conexão. Verifique sua internet e tente novamente.');
+    }
   }
 
   // ══ CRUD: MINHA LISTA DE JOGOS ══
