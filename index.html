@@ -18,7 +18,7 @@
     --white:      #f0f4ff;
     --white-muted:#a8b8d0;
     --black:      #000913;
-    --border:      rgba(43,125,233,0.25);
+    --border:     rgba(43,125,233,0.25);
     --border-glow:rgba(59,158,255,0.5);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -416,6 +416,7 @@
   }
   .cat-count { font-size:0.72rem; color:var(--white-muted); margin-top:0.2rem; font-family:'Space Mono',monospace; }
 
+
   .modal-error { background:rgba(200,50,50,0.15); border:1px solid rgba(200,50,50,0.4); color:#ff8888; font-size:0.8rem; padding:0.6rem 0.9rem; border-radius:4px; margin-bottom:1rem; text-align:center; display:none; }
   .modal-error.show { display:block; }
   .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px; }
@@ -555,7 +556,6 @@
     font-weight:700;
     font-size:0.8rem;
     border:1px solid var(--blue-glow);
-    cursor: pointer;
   }
   .user-name {
     font-size:0.82rem;
@@ -563,9 +563,7 @@
     font-family:'Space Mono',monospace;
     max-width:100px;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    cursor: pointer;
   }
-  .user-name:hover { color: var(--blue-glow); }
   .btn-logout {
     background:transparent;
     border:1px solid rgba(200,50,50,0.3);
@@ -577,47 +575,6 @@
     transition:all 0.2s;
   }
   .btn-logout:hover { border-color:rgba(200,50,50,0.7); color:rgba(255,100,100,1); }
-
-  /* ─── AJUSTES DO FÓRUM INTERATIVO ─── */
-  .search-wrapper {
-    max-width: 500px; margin: 0 auto 3rem; position: relative;
-  }
-  .search-input {
-    width: 100%; padding: 1rem 1.5rem; background: var(--navy-2);
-    border: 1px solid var(--border); border-radius: 30px; color: var(--white);
-    font-family: 'Exo 2', sans-serif; font-size: 1rem; outline: none; transition: all 0.3s;
-  }
-  .search-input:focus { border-color: var(--blue-glow); box-shadow: 0 0 15px rgba(59,158,255,0.2); }
-  
-  .forum-container {
-    display: flex; flex-direction: column; gap: 2rem; max-width: 900px; margin: 0 auto; text-align: left;
-  }
-  .forum-post {
-    background: var(--navy-2); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;
-  }
-  .forum-post-header {
-    display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;
-  }
-  .forum-game-title { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--blue-glow); text-transform: uppercase;}
-  .comments-section {
-    margin-top: 1.5rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 6px;
-  }
-  .comment-item {
-    font-size: 0.9rem; margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.05);
-  }
-  .comment-author { color: var(--blue-light); font-weight: 600; font-family: 'Space Mono', monospace; font-size: 0.8rem;}
-  .comment-form { display: flex; gap: 0.5rem; margin-top: 1rem; }
-  .comment-input {
-    flex: 1; background: var(--navy-3); border: 1px solid var(--border); border-radius: 4px; padding: 0.5rem 1rem; color: white; font-family: 'Exo 2', sans-serif;
-  }
-  .comment-btn { padding: 0.5rem 1rem; font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; background: var(--blue); border: none; color: white; border-radius: 4px; cursor: pointer;}
-
-  .input-group textarea {
-    width:100%; background:var(--navy-3); border:1px solid var(--border); color:var(--white);
-    padding:0.7rem 1rem; border-radius:4px; font-family:'Exo 2',sans-serif; font-size:0.9rem;
-    outline:none; transition:border-color 0.2s; resize: none; height: 80px;
-  }
-  .input-group textarea:focus { border-color:var(--border-glow); }
 
   /* ─── FOOTER ─── */
   footer {
@@ -698,6 +655,7 @@
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
   <div class="nav-logo">Nexus<span>Play</span></div>
   <ul class="nav-links">
@@ -708,8 +666,8 @@
   </ul>
   <div class="nav-cta">
     <div class="user-badge" id="userBadge">
-      <div class="user-avatar" id="userAvatar" onclick="openProfileModal()">??</div>
-      <span class="user-name" id="userName" onclick="openProfileModal()">Jogador</span>
+      <div class="user-avatar" id="userAvatar">??</div>
+      <span class="user-name" id="userName">Jogador</span>
       <button class="btn-logout" onclick="logout()">Sair</button>
     </div>
     <div id="authButtons">
@@ -719,6 +677,7 @@
   </div>
 </nav>
 
+<!-- HERO -->
 <section class="hero" id="home">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
@@ -753,6 +712,7 @@
   </div>
 </section>
 
+<!-- GAMES -->
 <section id="games">
   <p class="section-label reveal">// Catálogo em Destaque</p>
   <h2 class="section-title reveal">Jogos em Alta</h2>
@@ -852,6 +812,7 @@
   </div>
 </section>
 
+<!-- NEWS -->
 <section id="news">
   <p class="section-label reveal">// Feed de Notícias</p>
   <h2 class="section-title reveal">Últimas do Mundo Gamer</h2>
@@ -891,6 +852,7 @@
   </div>
 </section>
 
+<!-- CATEGORIES -->
 <section id="categories">
   <p class="section-label reveal">// Explorar por Gênero</p>
   <h2 class="section-title reveal">Categorias</h2>
@@ -907,25 +869,25 @@
   </div>
 </section>
 
+<!-- COMMUNITY CTA -->
 <section id="community" style="background:var(--navy-3); border-top:1px solid var(--border); border-bottom:1px solid var(--border); text-align:center; padding:5rem 5vw;">
-  <p class="section-label reveal" style="text-align:center">// Fórum Interativo</p>
-  <h2 class="section-title reveal" style="text-align:center">Pesquise e Comente sobre Jogos</h2>
-  <p class="section-sub reveal" style="margin:0 auto 2.5rem; text-align:center">Encontre tópicos dos seus games preferidos e deixe a sua opinião.</p>
-  
-  <div class="search-wrapper reveal">
-    <input type="text" class="search-input" id="forumSearch" placeholder="🔍 Digite o nome do jogo para buscar no fórum..." oninput="filterForum()">
+  <p class="section-label reveal" style="text-align:center">// Junte-se a nós</p>
+  <h2 class="section-title reveal" style="text-align:center">Faça Parte da Comunidade</h2>
+  <p class="section-sub reveal" style="margin:0 auto 2.5rem; text-align:center">Crie sua conta, monte sua biblioteca, poste reviews e conecte com outros gamers que curtem o mesmo que você.</p>
+  <div class="reveal" style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+    <button class="btn-primary" onclick="openModal('signup')">▶ Criar Conta Grátis</button>
+    <button class="btn-outline" onclick="openModal('login')">Já tenho conta</button>
   </div>
-
-  <div class="forum-container reveal" id="forumContainer">
-    </div>
 </section>
 
+<!-- CRUD: MINHA LISTA -->
 <section id="minhalista" style="background:var(--navy-2);border-top:1px solid var(--border);">
   <p class="section-label reveal">// Minha Conta</p>
   <h2 class="section-title reveal">Minha Lista de Jogos</h2>
   <p class="section-sub reveal" id="crudMsg">Faça login para gerenciar sua lista de jogos favoritos.</p>
 
   <div id="crudPanel" style="display:none">
+    <!-- CREATE -->
     <div style="background:var(--navy-3);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem;max-width:500px;">
       <h3 style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem;color:var(--blue-glow)">➕ Adicionar Jogo</h3>
       <div class="input-group">
@@ -943,11 +905,13 @@
       <button class="btn-primary" onclick="crudCreate()" style="margin-top:0.5rem;padding:0.65rem 1.5rem;">Adicionar à Lista</button>
     </div>
 
+    <!-- READ -->
     <div id="crudLista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;"></div>
     <p id="crudVazio" style="color:var(--white-muted);font-size:0.9rem;display:none;">Nenhum jogo na lista ainda. Adicione o primeiro!</p>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
   <div class="footer-brand">
     <div class="nav-logo">Nexus<span>Play</span></div>
@@ -975,197 +939,402 @@
     <a href="#">Termos de Uso</a>
   </div>
 </footer>
-
 <div class="footer-bottom">
   <span>© 2025 NexusPlay — Todos os direitos reservados.</span>
+  <span>Feito com 💙 no Brasil</span>
 </div>
 
-<div class="modal-overlay" id="profileModal">
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('profileModal')">×</button>
-    <div class="modal-logo">Meu <span>Perfil</span></div>
-    <p class="modal-subtitle">Gerencie suas informações públicas</p>
-    
-    <div class="input-group">
-      <label>Nickname</label>
-      <input type="text" id="profileNameInput">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">Nexus<span>Play</span></div>
+    <div class="modal-subtitle" id="modalSubtitle">Acesse sua conta de jogador</div>
+    <div class="modal-error" id="modalError"></div>
+
+    <!-- Google Login -->
+    <button class="google-btn" id="googleBtn" onclick="loginWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Continuar com Google
+    </button>
+
+    <div class="divider"><span>ou use seu e-mail</span></div>
+
+    <!-- Manual form -->
+    <div id="formLogin">
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="loginEmail" placeholder="seuemail@exemplo.com">
+      </div>
+      <div class="input-group">
+        <label>Senha</label>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </div>
+      <button class="modal-submit" id="loginBtn" onclick="loginManual()">Entrar na Conta</button>
+      <div class="modal-switch" style="margin-top:0.5rem;"><a href="#" onclick="switchModal('reset')" style="color:var(--white-muted);font-size:0.78rem;">Esqueci minha senha</a></div>
+      <div class="modal-switch">Não tem conta? <a href="#" onclick="switchModal('signup')">Criar agora</a></div>
     </div>
-    <div class="input-group">
-      <label>Biografia Gamer</label>
-      <textarea id="profileBioInput" placeholder="Conte um pouco sobre os jogos que você curte..."></textarea>
+
+    <div id="formSignup" style="display:none">
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="signupEmail" placeholder="seuemail@exemplo.com">
+      </div>
+      <div class="input-group">
+        <label>Senha</label>
+        <input type="password" id="signupPassword" placeholder="Min. 8 caracteres">
+      </div>
+      <button class="modal-submit" id="signupBtn" onclick="signupManual()">Criar Conta</button>
+      <div class="modal-switch">Já tem conta? <a href="#" onclick="switchModal('login')">Entrar</a></div>
     </div>
-    <button class="modal-submit" onclick="saveProfile()">Salvar Alterações</button>
+    <!-- FORM RESET -->
+    <div id="formReset" style="display:none">
+      <p style="font-size:0.82rem;color:var(--white-muted);margin-bottom:1rem;text-align:center;">Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="resetEmail" placeholder="seuemail@exemplo.com">
+      </div>
+      <button class="modal-submit" id="resetBtn" onclick="resetPassword()">Enviar Link</button>
+      <div class="modal-switch">Lembrou a senha? <a href="#" onclick="switchModal('login');return false;">Voltar</a></div>
+    </div>
+
+    <!-- FORM NOVA SENHA -->
+    <div id="formNewPassword" style="display:none">
+      <p style="font-size:0.82rem;color:var(--white-muted);margin-bottom:1rem;text-align:center;">Digite sua nova senha abaixo.</p>
+      <div class="input-group">
+        <label>Nova Senha</label>
+        <input type="password" id="newPassword" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="input-group">
+        <label>Confirmar Nova Senha</label>
+        <input type="password" id="confirmPassword" placeholder="Repita a senha">
+      </div>
+      <button class="modal-submit" id="newPasswordBtn" onclick="applyNewPassword()">Salvar Nova Senha</button>
+    </div>
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastMsg">Bem-vindo!</span>
+</div>
+
 <script>
-  let currentUser = null; 
+  // ══ SUPABASE INIT ══
+  const SUPABASE_URL = 'https://narevbzvpbnehdgvkloz.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_amCCcFW4FrZWmh4zkGEidA_oOwwKIzr';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Database Mock do Fórum
-  let forumData = [
-    { id: 1, game: "Shadow Realm Chronicles", category: "RPG / Ação", comments: [{ author: "CyberKnight", text: "Melhor RPG que joguei este ano!" }] },
-    { id: 2, game: "Void Protocol", category: "FPS / Sci-Fi", comments: [{ author: "VortexGamer", text: "A gravidade zero desse jogo é animal, curti dms." }] },
-    { id: 3, game: "Verdant Survival", category: "Survival / Craft", comments: [{ author: "GreenFauna", text: "Alguém querendo fechar squad para coletar recursos?" }] },
-    { id: 4, game: "Iron Fist Arena", category: "Luta / PVP", comments: [] },
-    { id: 5, game: "Nitro Rush Legends", category: "Corrida / Arcade", comments: [] },
-    { id: 6, game: "Mind Fracture", category: "Puzzle / Indie", comments: [] }
-  ];
-
-  // Funções Básicas de Modal já existentes no seu projeto
+  // ══ MODAL ══
+  let currentModal = 'login';
   function openModal(type) {
-    // Caso tenha modais de Auth, trate-os aqui. Exemplo simulado de login:
-    if(type === 'login' || type === 'signup') {
-      simularLoginSucesso("GamerPro");
+    currentModal = type;
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('formLogin').style.display  = type === 'login'  ? 'block' : 'none';
+    document.getElementById('formSignup').style.display = type === 'signup' ? 'block' : 'none';
+    document.getElementById('formReset').style.display       = type === 'reset'       ? 'block' : 'none';
+    document.getElementById('formNewPassword').style.display = type === 'newpassword' ? 'block' : 'none';
+    const subtitles = { login:'Acesse sua conta de jogador', signup:'Crie sua conta gratuita', reset:'Redefinir senha', newpassword:'Criar nova senha' };
+    document.getElementById('modalSubtitle').textContent = subtitles[type] || '';
+    // Google btn only for login/signup
+    const hideGoogle = type === 'reset' || type === 'newpassword';
+    document.getElementById('googleBtn').style.display = hideGoogle ? 'none' : 'flex';
+    document.querySelector('.divider').style.display    = hideGoogle ? 'none' : 'flex';
+    hideError();
+  }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+  function handleOverlayClick(e) { if(e.target.id==='modalOverlay') closeModal(); }
+  function switchModal(type) { openModal(type); return false; }
+  function showError(msg) { const el=document.getElementById('modalError'); el.textContent=msg; el.classList.add('show'); }
+  function hideError() { document.getElementById('modalError').classList.remove('show'); }
+  function setLoading(id, on, label) {
+    const b=document.getElementById(id);
+    b.disabled=on;
+    b.innerHTML=on?'<span class="spinner"></span> Aguarde...':label;
+  }
+
+  // ══ GOOGLE LOGIN REAL (redireciona para tela de escolha de conta Google) ══
+  async function loginWithGoogle() {
+    const btn = document.getElementById('googleBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Abrindo Google...';
+    hideError();
+    // Limpa sessão anterior para garantir que abre a tela de escolha de conta
+    await sb.auth.signOut();
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://nexus-play-jet.vercel.app',
+        queryParams: {
+          prompt: 'select_account',   // força tela de escolha de conta sempre
+          access_type: 'offline'
+        }
+      }
+    });
+    if (error) {
+      showError('Erro: ' + error.message);
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continuar com Google';
     }
+    // Se sem erro: Supabase abre a tela de escolha de conta Google automaticamente
   }
 
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
+  // ══ LOGIN EMAIL/SENHA ══
+  async function loginManual() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPassword').value;
+    if (!email||!pass) { showError('Preencha e-mail e senha.'); return; }
+    setLoading('loginBtn', true);
+    hideError();
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    setLoading('loginBtn', false, 'Entrar na Conta');
+    if (error) { showError(error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error.message); return; }
+    closeModal();
+    await salvarPerfil(data.user);
+    renderUser(data.user);
+    const nome = data.user.user_metadata?.full_name || data.user.email.split('@')[0];
+    showToast('🎮', 'Bem-vindo de volta, ' + nome + '!');
   }
 
-  // Login Simulado para preencher estados globais
-  function simularLoginSucesso(nickname) {
-    currentUser = {
-      name: nickname,
-      bio: "Pronto para o gameplay na NexusPlay!"
-    };
+  // ══ CADASTRO EMAIL/SENHA ══
+  async function signupManual() {
+    const email = document.getElementById('signupEmail').value.trim();
+    const pass  = document.getElementById('signupPassword').value;
+    if (!email||!pass) { showError('Preencha e-mail e senha.'); return; }
+    if (pass.length<6)  { showError('Senha precisa ter pelo menos 6 caracteres.'); return; }
+    setLoading('signupBtn', true);
+    hideError();
+    const { error: signUpError } = await sb.auth.signUp({ email, password: pass });
+    setLoading('signupBtn', false, 'Criar Conta');
+    if (signUpError) { showError(signUpError.message); return; }
+
+    // Após cadastro, faz login automático
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      closeModal();
+      showToast('📧', 'Conta criada! Verifique seu e-mail para ativar.');
+      return;
+    }
+    closeModal();
+    await salvarPerfil(data.user);
+    renderUser(data.user);
+    showToast('🎉', 'Conta criada e logado! Bem-vindo ao NexusPlay!');
+  }
+
+  // ══ SALVAR PERFIL NO BANCO (tabela profiles) ══
+  async function salvarPerfil(user) {
+    if (!user) return;
+    try {
+      await sb.from('profiles').upsert({
+        id:         user.id,
+        email:      user.email,
+        nome:       user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0],
+        avatar_url: user.user_metadata?.avatar_url || null,
+        provider:   user.app_metadata?.provider || 'email',
+        ultimo_login: new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch(e) { console.warn('Tabela profiles não encontrada. Crie-a no Supabase SQL Editor.', e); }
+  }
+
+  // ══ RENDER USUÁRIO LOGADO NA NAVBAR ══
+  function renderUser(user) {
+    if (!user) return;
+    const nome   = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+    const avatar = user.user_metadata?.avatar_url;
     document.getElementById('authButtons').style.display = 'none';
-    document.getElementById('userBadge').style.display = 'flex';
-    document.getElementById('userName').innerText = currentUser.name;
-    document.getElementById('userAvatar').innerText = currentUser.name.substring(0,2).toUpperCase();
-    
-    // Mostra painel CRUD
-    if(document.getElementById('crudPanel')) {
-      document.getElementById('crudPanel').style.display = 'block';
-      document.getElementById('crudMsg').innerText = 'Gerencie sua lista personalizada de jogos abaixo.';
+    document.getElementById('userBadge').style.display   = 'flex';
+    document.getElementById('userName').textContent      = nome;
+    const avatarEl = document.getElementById('userAvatar');
+    if (avatar) {
+      avatarEl.innerHTML = '<img src="'+avatar+'" alt="'+nome+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    } else {
+      avatarEl.textContent = nome.slice(0,2).toUpperCase();
     }
   }
 
-  function logout() {
-    currentUser = null;
-    document.getElementById('authButtons').style.display = 'block';
-    document.getElementById('userBadge').style.display = 'none';
-    if(document.getElementById('crudPanel')) {
-      document.getElementById('crudPanel').style.display = 'none';
-      document.getElementById('crudMsg').innerText = 'Faça login para gerenciar sua lista de jogos favoritos.';
+  // ══ LOGOUT ══
+  async function logout() {
+    await sb.auth.signOut();
+    document.getElementById('authButtons').style.display = 'flex';
+    document.getElementById('userBadge').style.display   = 'none';
+    document.getElementById('userAvatar').textContent    = '??';
+    showToast('👋', 'Até logo!');
+  }
+
+  // ══ DETECTA SESSÃO AUTOMATICAMENTE (inclui retorno do redirect Google) ══
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      // Abre modal para digitar nova senha
+      openModal('newpassword');
+      return;
+    }
+    if (event === 'SIGNED_IN' && session?.user) {
+      renderUser(session.user);
+      await salvarPerfil(session.user);
+      const nome = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email.split('@')[0];
+      showToast('🎮', 'Bem-vindo, ' + nome + '!');
+      ativarCrud();
+      // Limpa os parametros OAuth da URL sem recarregar a pagina
+      if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+    if (event === 'SIGNED_OUT') {
+      document.getElementById('authButtons').style.display = 'flex';
+      document.getElementById('userBadge').style.display   = 'none';
+      document.getElementById('userAvatar').textContent    = '??';
+    }
+  });
+
+  // Verifica sessão existente ao carregar a pagina
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      renderUser(session.user);
+      ativarCrud();
+    }
+  })();
+
+  // ══ TOAST ══
+  function showToast(icon, msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent  = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 4000);
+  }
+
+  // ══ RESET PASSWORD ══
+  async function resetPassword() {
+    const email = document.getElementById('resetEmail').value.trim();
+    if (!email) { showError('Digite seu e-mail.'); return; }
+    setLoading('resetBtn', true);
+    hideError();
+    try {
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://nexus-play-jet.vercel.app/?type=recovery'
+      });
+      setLoading('resetBtn', false, 'Enviar Link');
+      if (error) {
+        if (error.message.includes('rate limit') || error.status === 429) {
+          showError('Muitas tentativas. Aguarde alguns minutos e tente de novo.');
+        } else {
+          showError('Erro: ' + error.message);
+        }
+        return;
+      }
+      closeModal();
+      showToast('📧', 'Se esse e-mail estiver cadastrado, o link foi enviado!');
+    } catch(e) {
+      setLoading('resetBtn', false, 'Enviar Link');
+      showError('Erro de conexão. Verifique sua internet e tente novamente.');
     }
   }
 
-  // Funções do Modal Customizado de Perfil
-  function openProfileModal() {
-    if(!currentUser) {
-      currentUser = { name: document.getElementById('userName').innerText || "Jogador", bio: "Fã de carteirinha da NexusPlay." };
-    }
-    document.getElementById('profileNameInput').value = currentUser.name;
-    document.getElementById('profileBioInput').value = currentUser.bio || "";
-    document.getElementById('profileModal').classList.add('active');
+  // ══ CRUD: MINHA LISTA DE JOGOS ══
+  async function crudCreate() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { showToast('⚠️', 'Faça login primeiro!'); return; }
+
+    const nome   = document.getElementById('crudNome').value.trim();
+    const genero = document.getElementById('crudGenero').value.trim();
+    const nota   = document.getElementById('crudNota').value;
+    if (!nome) { showToast('⚠️', 'Digite o nome do jogo!'); return; }
+
+    const { error } = await sb.from('jogos_favoritos').insert({
+      user_id: session.user.id,
+      nome,
+      genero,
+      nota: nota ? parseInt(nota) : null
+    });
+
+    if (error) { showToast('❌', 'Erro: ' + error.message); return; }
+
+    document.getElementById('crudNome').value   = '';
+    document.getElementById('crudGenero').value = '';
+    document.getElementById('crudNota').value   = '';
+    showToast('✅', 'Jogo adicionado!');
+    await crudRead();
   }
 
-  function saveProfile() {
-    const newName = document.getElementById('profileNameInput').value.trim();
-    const newBio = document.getElementById('profileBioInput').value.trim();
+  async function crudRead() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
 
-    if(!newName) return alert("O nome não pode ficar vazio!");
-    
-    currentUser.name = newName;
-    currentUser.bio = newBio;
-    
-    document.getElementById('userName').innerText = newName;
-    document.getElementById('userAvatar').innerText = newName.substring(0,2).toUpperCase();
-    
-    closeModal('profileModal');
-  }
+    const { data, error } = await sb.from('jogos_favoritos')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('criado_em', { ascending: false });
 
-  // Funções Dinâmicas do Fórum
-  function renderForum(dataToRender = forumData) {
-    const container = document.getElementById('forumContainer');
-    if(!container) return;
-    container.innerHTML = '';
+    const lista = document.getElementById('crudLista');
+    const vazio = document.getElementById('crudVazio');
 
-    if(dataToRender.length === 0) {
-      container.innerHTML = `<p style="color:var(--white-muted); text-align:center; width:100%;">Nenhum jogo encontrado no fórum com esse nome.</p>`;
+    if (error || !data || data.length === 0) {
+      lista.innerHTML = '';
+      vazio.style.display = 'block';
       return;
     }
 
-    dataToRender.forEach(post => {
-      let commentsHTML = post.comments.map(c => `
-        <div class="comment-item">
-          <span class="comment-author">@${c.author}:</span> ${c.text}
-        </div>
-      `).join('');
-
-      container.innerHTML += `
-        <div class="forum-post">
-          <div class="forum-post-header">
-            <span class="forum-game-title">${post.game}</span>
-            <span class="game-genre" style="background:rgba(43,125,233,0.1); padding: 2px 8px; border-radius:4px;">${post.category}</span>
-          </div>
-          <div class="comments-section">
-            <h4 style="font-size:0.85rem; margin-bottom:0.5rem; letter-spacing:1px; text-transform:uppercase; color:var(--white-muted);">Comentários:</h4>
-            <div id="comments-list-${post.id}">${commentsHTML || '<p style="font-size:0.8rem; color:var(--white-muted); margin-bottom:0.5rem;">Seja o primeiro a gostar e comentar!</p>'}</div>
-            
-            <div class="comment-form">
-              <input type="text" class="comment-input" id="input-${post.id}" placeholder="Escreva um comentário sobre o jogo...">
-              <button class="comment-btn" onclick="addComment(${post.id})">Enviar</button>
-            </div>
-          </div>
-        </div>
-      `;
-    });
+    vazio.style.display = 'none';
+    lista.innerHTML = data.map(j => `
+      <div style="background:var(--navy-3);border:1px solid var(--border);border-radius:8px;padding:1.2rem;position:relative;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;margin-bottom:0.3rem;">${j.nome}</div>
+        <div style="font-size:0.78rem;color:var(--white-muted);margin-bottom:0.3rem;">${j.genero || 'Sem gênero'}</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.82rem;color:var(--blue-glow);">${j.nota ? '★ ' + j.nota + '/10' : 'Sem nota'}</div>
+        <button onclick="crudDelete('${j.id}')" style="position:absolute;top:0.8rem;right:0.8rem;background:rgba(200,50,50,0.15);border:1px solid rgba(200,50,50,0.3);color:rgba(255,100,100,0.8);padding:0.25rem 0.6rem;border-radius:4px;font-size:0.72rem;font-family:'Space Mono',monospace;cursor:pointer;">🗑 Deletar</button>
+      </div>
+    `).join('');
   }
 
-  function filterForum() {
-    const searchTerm = document.getElementById('forumSearch').value.toLowerCase();
-    const filtered = forumData.filter(post => post.game.toLowerCase().includes(searchTerm));
-    renderForum(filtered);
+  async function crudDelete(id) {
+    const { error } = await sb.from('jogos_favoritos').delete().eq('id', id);
+    if (error) { showToast('❌', 'Erro ao deletar.'); return; }
+    showToast('🗑', 'Jogo removido!');
+    await crudRead();
   }
 
-  function addComment(postId) {
-    const input = document.getElementById(`input-${postId}`);
-    const commentText = input.value.trim();
-
-    if(!commentText) return;
-
-    const authorName = currentUser ? currentUser.name : "Visitante";
-
-    const post = forumData.find(p => p.id === postId);
-    if(post) {
-      post.comments.push({ author: authorName, text: commentText });
-      input.value = ''; 
-      renderForum();
+  // Ativa painel CRUD quando logado
+  async function ativarCrud() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      document.getElementById('crudPanel').style.display = 'block';
+      document.getElementById('crudMsg').style.display   = 'none';
+      await crudRead();
     }
   }
 
-  // Efeito básico de reveal nas seções ao rolar scroll
-  function handleReveal() {
-    const reveals = document.querySelectorAll('.reveal');
-    reveals.forEach(elem => {
-      const windowHeight = window.innerHeight;
-      const elementTop = elem.getBoundingClientRect().top;
-      const elementVisible = 100;
-      if (elementTop < windowHeight - elementVisible) {
-        elem.classList.add('visible');
-      }
-    });
+  // ══ APLICAR NOVA SENHA ══
+  async function applyNewPassword() {
+    const nova    = document.getElementById('newPassword').value;
+    const confirma = document.getElementById('confirmPassword').value;
+    if (!nova || !confirma) { showError('Preencha os dois campos.'); return; }
+    if (nova !== confirma)  { showError('As senhas não coincidem.'); return; }
+    if (nova.length < 6)    { showError('Mínimo 6 caracteres.'); return; }
+    setLoading('newPasswordBtn', true);
+    hideError();
+    const { error } = await sb.auth.updateUser({ password: nova });
+    setLoading('newPasswordBtn', false, 'Salvar Nova Senha');
+    if (error) { showError(error.message); return; }
+    closeModal();
+    showToast('✅', 'Senha atualizada! Faça login com a nova senha.');
+    await sb.auth.signOut();
+    document.getElementById('authButtons').style.display = 'flex';
+    document.getElementById('userBadge').style.display   = 'none';
   }
 
-  window.addEventListener('scroll', handleReveal);
-
-  // Inicialização Inicial
-  window.addEventListener('DOMContentLoaded', () => {
-    renderForum();
-    handleReveal();
-  });
-
-  // Funções Simples de Placeholder para o CRUD enviado no escopo
-  function crudCreate() {
-    const nome = document.getElementById('crudNome').value;
-    if(!nome) return;
-    alert('Jogo adicionado aos favoritos localmente!');
-    document.getElementById('crudNome').value = '';
-    document.getElementById('crudGenero').value = '';
-    document.getElementById('crudNota').value = '';
-  }
+  // ══ SCROLL REVEAL ══
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold:0.1, rootMargin:'0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+  document.querySelectorAll('.game-card.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i*0.08)+'s'; });
+  document.querySelectorAll('.cat-card.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i*0.05)+'s'; });
 </script>
 </body>
 </html>
